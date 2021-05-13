@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+
+  sqlserver:
+    image: "mcr.microsoft.com/mssql/server:2017-latest"
+    environment: 
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "secret_password123!"
+      MSSQL_PID: "Express"
+    ports: 
+      - "1433:1433"
+
+  emailsenderservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:44395;http://+:80
+      - ASPNETCORE_HTTPS_PORT=44395
+    image: ${DOCKER_REGISTRY-}emailsenderservice
+    build:
+      context: .
+      dockerfile: EmailSenderService/Dockerfile
+    depends_on:
+      - sqlserver
